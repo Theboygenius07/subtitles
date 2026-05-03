@@ -1,16 +1,17 @@
 import { cloudinaryUrl } from '../utils.js'
 import { gsap } from 'gsap'
 
-// Grid constants
-const CARD_W  = 280
-const CARD_H  = Math.round(CARD_W * 9 / 16)  // 158
-const GAP     = 200
-const SLOT_W  = CARD_W + GAP   // 480
-const SLOT_H  = CARD_H + GAP   // 358
-const COLS    = 7
-const TILES   = 3   // 3×3 seamless tile copies
+const TILES = 3   // 3×3 seamless tile copies
 
 export function initFreeform(container, photos) {
+  // Grid constants — tighter on mobile
+  const isMobile = window.innerWidth < 768
+  const CARD_W = isMobile ? 220 : 280
+  const CARD_H = Math.round(CARD_W * 9 / 16)
+  const GAP    = isMobile ? 70  : 200
+  const SLOT_W = CARD_W + GAP
+  const SLOT_H = CARD_H + GAP
+  const COLS   = 7
   container.innerHTML = ''
   container.classList.add('ff-view')
 
