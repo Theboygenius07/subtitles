@@ -197,11 +197,13 @@ export function initFreeform(container, photos) {
   function openFocus(photo, srcEl) {
     const clamp = (v, a, b) => Math.max(a, Math.min(b, v))
 
-    const src    = srcEl.getBoundingClientRect()
-    const vw     = window.innerWidth
-    const vh     = window.innerHeight
-    const finalH = Math.round(vh * 0.8)
-    const finalW = Math.round(finalH * 16 / 9)
+    const src  = srcEl.getBoundingClientRect()
+    const vw   = window.innerWidth
+    const vh   = window.innerHeight
+    // Fit 16:9 card within 90% viewport width AND 80% viewport height
+    let finalW = Math.round(vw * 0.90)
+    let finalH = Math.round(finalW * 9 / 16)
+    if (finalH > vh * 0.80) { finalH = Math.round(vh * 0.80); finalW = Math.round(finalH * 16 / 9) }
     const finalL = Math.round((vw - finalW) / 2)
     const finalT = Math.round((vh - finalH) / 2)
 

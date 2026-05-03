@@ -95,11 +95,9 @@ export function initVertical(container, photos) {
     const INACT_H  = Math.round(vh * 0.30)
     const SLOT     = Math.round((ACTIVE_H + INACT_H) / 2 + 20)
 
-    // Available width for images (ticker area + 300px gap)
-    const TICKER_AREA = 110   // left offset + max tick width (68.8px)
-    const COLUMN_GAP  = 300
-    const imgLeft     = TICKER_AREA + COLUMN_GAP
-    const availW      = vw - imgLeft
+    // On mobile: center images in full width. On desktop: offset right of ticker column.
+    const imgLeft = vw < 600 ? 20 : 410   // 410 = TICKER_AREA(110) + COLUMN_GAP(300)
+    const availW  = vw - imgLeft - (vw < 600 ? 20 : 0)
 
     const activeIdx = Math.round(lerpPos)
 
