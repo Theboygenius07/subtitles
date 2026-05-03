@@ -103,8 +103,9 @@ export function initGlobe(container, photos) {
     focusOpen = true
     const srcRect = getMeshScreenRect(mesh)
     const vw = window.innerWidth, vh = window.innerHeight
-    const finalH = Math.round(vh * 0.8)
-    const finalW = Math.round(finalH * 16 / 9)
+    let finalW = Math.round(vw * 0.90)
+    let finalH = Math.round(finalW * 9 / 16)
+    if (finalH > vh * 0.80) { finalH = Math.round(vh * 0.80); finalW = Math.round(finalH * 16 / 9) }
     const finalL = Math.round((vw - finalW) / 2)
     const finalT = Math.round((vh - finalH) / 2)
 

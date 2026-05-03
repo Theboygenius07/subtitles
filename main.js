@@ -82,19 +82,6 @@ async function activateView(name) {
   }))
 }
 
-// ─── Background image toggle ──────────────────────────────
-
-function initBgToggle() {
-  const btn = document.getElementById('bgToggle')
-  let active = false
-
-  btn.addEventListener('click', () => {
-    active = !active
-    document.body.classList.toggle('has-bg-image', active)
-    btn.classList.toggle('active', active)
-  })
-}
-
 // ─── Hand tracking toggle ─────────────────────────────────
 
 function initTrackToggle() {
@@ -223,7 +210,6 @@ function initAbout() {
 
 async function init() {
   initTheme()
-  initBgToggle()
   initTrackToggle()
   initAbout()
   initModal()
