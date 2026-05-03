@@ -270,11 +270,12 @@ body {
   background: rgba(0, 0, 0, 0.12);
 }
 
-/* Filter (first): left pill cap */
-.cp-filter {
+/* Me (first): left pill cap */
+.cp-me {
   border-radius: 5.938px 1.568px 1.568px 5.938px;
   padding-left: 10px;
-  padding-right: 7px;
+  padding-right: 8px;
+  gap: 5px;
 }
 
 /* Last button in left group: right pill cap */
@@ -1040,6 +1041,8 @@ body {
   position: relative;
   z-index: 1;
   padding: 22px 24px 24px;
+  max-height: min(560px, 80vh);
+  overflow-y: auto;
 }
 
 /* Header row */
@@ -1105,17 +1108,25 @@ body {
   background: rgba(0, 0, 0, 0.09);
 }
 
-/* Tracking section */
-.about-tracking-label {
+/* Gradient accent bar at popup top */
+.about-accent {
+  height: 2.5px;
+  background: linear-gradient(to right, #4f8ef7, #a78bf7, #f79c4f, #f76b8e, #5bc777);
+  border-radius: 2px 2px 0 0;
+}
+
+/* Controls section label */
+.about-section-label {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--muted);
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 
-.about-gesture-list {
+/* Accordion */
+.about-accordion {
   display: flex;
   flex-direction: column;
   gap: 1px;
@@ -1123,36 +1134,118 @@ body {
   overflow: hidden;
   background: rgba(255, 255, 255, 0.04);
 }
-:root[data-theme="light"] .about-gesture-list {
+:root[data-theme="light"] .about-accordion {
   background: rgba(0, 0, 0, 0.04);
 }
 
-.about-gesture {
+.about-acc-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  background: rgba(255, 255, 255, 0.025);
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.about-acc-header:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+:root[data-theme="light"] .about-acc-header {
+  background: rgba(0, 0, 0, 0.02);
+}
+:root[data-theme="light"] .about-acc-header:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.about-acc-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.about-acc-icon {
+  opacity: 0.45;
+  flex-shrink: 0;
+}
+
+.about-acc-name {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--text);
+}
+
+.about-acc-chevron {
+  color: var(--muted);
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+.about-acc-item.open .about-acc-chevron {
+  transform: rotate(180deg);
+}
+
+.about-acc-body {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.015);
+}
+:root[data-theme="light"] .about-acc-body {
+  background: rgba(0, 0, 0, 0.015);
+}
+
+.about-acc-content {
+  padding: 6px 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.about-ctrl-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.03);
-  gap: 16px;
-}
-:root[data-theme="light"] .about-gesture {
-  background: rgba(0, 0, 0, 0.02);
+  gap: 12px;
 }
 
-.about-gesture span:first-child {
+.about-ctrl-action {
   font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  color: var(--text);
+  color: var(--muted);
   flex-shrink: 0;
-  width: 44px;
 }
 
-.about-gesture span:last-child {
-  font-size: 12px;
-  color: var(--muted);
-  text-align: right;
-  line-height: 1.35;
+.about-ctrl-keys {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.about-key {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 0.5px solid rgba(255, 255, 255, 0.14);
+  border-bottom-width: 1.5px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  color: rgba(255, 255, 255, 0.75);
+  white-space: nowrap;
+}
+:root[data-theme="light"] .about-key {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.14);
+  color: rgba(0, 0, 0, 0.60);
 }
 
 /* ─── Responsive ─────────────────────────────────────────── */
