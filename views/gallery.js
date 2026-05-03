@@ -4,7 +4,7 @@ import { cloudinaryUrl } from '../utils.js'
 
 const ROOM_W   = 14
 const ROOM_H   = 5.5
-const ROOM_D   = 62
+const ROOM_D   = 110
 const HANG_Y   = 1.55
 const EYE_Y    = 1.70
 const WALL_X   = ROOM_W / 2
@@ -96,8 +96,10 @@ export function initGallery(container, photos) {
     const side = (i % 2 === 0) ? -1 : 1
     const wx   = side * PHOTO_X
 
-    const t = i / (photos.length - 1)
-    const z = ROOM_D / 2 - 3 - t * SPREAD + Math.sin(i * 2.618) * 0.55
+    const wallIdx   = Math.floor(i / 2)
+    const wallCount = Math.ceil(photos.length / 2)
+    const t = wallCount > 1 ? wallIdx / (wallCount - 1) : 0
+    const z = ROOM_D / 2 - 3 - t * SPREAD + Math.sin(i * 2.618) * 0.30
     const y = HANG_Y + Math.sin(i * 1.414) * 0.12
     const ry = side === -1 ? Math.PI / 2 : -Math.PI / 2
 
@@ -584,7 +586,7 @@ function buildRoom(scene, floorBase, wallBase) {
 
 // ── Ceiling track lights ───────────────────────────────────
 function addTrackLights(scene) {
-  const COUNT   = 14
+  const COUNT   = 24
   const fixMat  = new THREE.MeshBasicMaterial({ color: 0x222222 })
   const bulbMat = new THREE.MeshBasicMaterial({ color: 0xFFEE88 })
 
