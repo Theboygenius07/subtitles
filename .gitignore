@@ -1,0 +1,12 @@
+node_modules/
+.env
+package-lock.json
+.DS_Store
+upload.js
+
+# Claude Code local config — contains API tokens
+.claude/
+.mcp.json
+
+# Local image copies — served from Cloudinary in production
+content/images/Subtiles*.png
