@@ -520,7 +520,7 @@ function buildRoom(scene, floorBase, wallBase) {
   function wallMat(w, h) {
     return new THREE.MeshStandardMaterial({
       map: scaledTex(wallBase, w, h, 5.0),
-      color: 0x8A8880, roughness: 0.78, metalness: 0,
+      color: 0xF0EDE8, roughness: 0.78, metalness: 0,
     })
   }
 
