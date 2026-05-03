@@ -90,14 +90,21 @@ export function initVertical(container, photos) {
     const vw = container.clientWidth
     const vh = container.clientHeight
 
-    // Image sizing — height-based, 16:9
-    const ACTIVE_H = Math.round(vh * 0.56)
-    const INACT_H  = Math.round(vh * 0.30)
-    const SLOT     = Math.round((ACTIVE_H + INACT_H) / 2 + 20)
-
-    // On mobile: center images in full width. On desktop: offset right of ticker column.
+    // On mobile: center in full width. On desktop: offset right of ticker column.
     const imgLeft = vw < 600 ? 20 : 410   // 410 = TICKER_AREA(110) + COLUMN_GAP(300)
     const availW  = vw - imgLeft - (vw < 600 ? 20 : 0)
+
+    // Mobile: width-first sizing so cards never exceed availW.
+    // Desktop: height-first so cards fill the vertical viewport nicely.
+    let ACTIVE_H, INACT_H
+    if (vw < 600) {
+      ACTIVE_H = Math.round(availW * 9 / 16)
+      INACT_H  = Math.round(availW * 0.65 * 9 / 16)
+    } else {
+      ACTIVE_H = Math.round(vh * 0.56)
+      INACT_H  = Math.round(vh * 0.30)
+    }
+    const SLOT = Math.round((ACTIVE_H + INACT_H) / 2 + 20)
 
     const activeIdx = Math.round(lerpPos)
 
