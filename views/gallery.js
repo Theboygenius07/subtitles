@@ -523,23 +523,10 @@ function buildRoom(scene, floorBase, wallBase) {
   bw.position.set(0, ROOM_H / 2, -ROOM_D / 2)
   scene.add(bw)
 
-  const DW = 4, DH = 2.8
-  const sw = (ROOM_W - DW) / 2
-
-  const el = new THREE.Mesh(new THREE.PlaneGeometry(sw, ROOM_H), wallMat(sw, ROOM_H))
-  el.rotation.y = Math.PI
-  el.position.set(-(ROOM_W / 2 - sw / 2), ROOM_H / 2, ROOM_D / 2)
-  scene.add(el)
-
-  const er = new THREE.Mesh(new THREE.PlaneGeometry(sw, ROOM_H), wallMat(sw, ROOM_H))
-  er.rotation.y = Math.PI
-  er.position.set(ROOM_W / 2 - sw / 2, ROOM_H / 2, ROOM_D / 2)
-  scene.add(er)
-
-  const et = new THREE.Mesh(new THREE.PlaneGeometry(DW, ROOM_H - DH), wallMat(DW, ROOM_H - DH))
-  et.rotation.y = Math.PI
-  et.position.set(0, DH + (ROOM_H - DH) / 2, ROOM_D / 2)
-  scene.add(et)
+  const fw = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_W, ROOM_H), wallMat(ROOM_W, ROOM_H))
+  fw.rotation.y = Math.PI
+  fw.position.set(0, ROOM_H / 2, ROOM_D / 2)
+  scene.add(fw)
 
   const BH = 0.14
   const BL = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_D, BH), baseMat)
@@ -555,6 +542,11 @@ function buildRoom(scene, floorBase, wallBase) {
   const BB = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_W, BH), baseMat)
   BB.position.set(0, BH / 2, -ROOM_D / 2 + 0.002)
   scene.add(BB)
+
+  const BF = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_W, BH), baseMat)
+  BF.rotation.y = Math.PI
+  BF.position.set(0, BH / 2, ROOM_D / 2 - 0.002)
+  scene.add(BF)
 }
 
 // ── Ceiling track lights ───────────────────────────────────
