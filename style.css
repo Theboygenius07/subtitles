@@ -787,7 +787,7 @@ body.has-bg-image::before {
   display: flex;
   align-items: flex-end;
   gap: 16px;
-  padding: 32px 40px 36px;
+  padding: 32px 40px 80px;  /* 80px clears the control panel (24px bottom + ~38px height + gap) */
   background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.28) 70%, transparent 100%);
   z-index: 20;
   pointer-events: auto;
@@ -1195,9 +1195,9 @@ body.has-bg-image::before {
     display: none;
   }
 
-  /* Gallery info: tighter padding */
+  /* Gallery info: tighter sides, but keep bottom clearance for control panel */
   .gal-info-panel {
-    padding: 20px 24px 28px;
+    padding: 20px 24px 72px;
   }
 }
 
@@ -1226,11 +1226,11 @@ body.has-bg-image::before {
     left: 16px;
   }
 
-  /* Gallery info panel: stack vertically */
+  /* Gallery info panel: stack vertically, keep bottom clearance for control panel at bottom:16px */
   .gal-info-panel {
     flex-direction: column;
     align-items: flex-start;
-    padding: 14px 18px 20px;
+    padding: 14px 18px 68px;
     gap: 10px;
   }
 
