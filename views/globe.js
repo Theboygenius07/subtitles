@@ -279,19 +279,44 @@ export function initGlobe(container, photos) {
     if (hit) openFocus(hit.object.userData.photo, hit.object)
   })
 
-  // ── Touch ─────────────────────────────────────────────────
-  window.addEventListener('touchstart', e => {
-    dragStartX = e.touches[0].clientX; dragStartY = e.touches[0].clientY
-    dragging = true; prev.x = dragStartX; prev.y = dragStartY
-  }, { passive: true })
-  window.addEventListener('touchmove', e => {
-    if (!dragging) return
-    const dx = e.touches[0].clientX - prev.x, dy = e.touches[0].clientY - prev.y
-    targetY += dx * 0.004; targetX += dy * 0.004
-    velX = dx * 0.002;     velY = dy * 0.002
-    prev.x = e.touches[0].clientX; prev.y = e.touches[0].clientY
-  }, { passive: true })
-  window.addEventListener('touchend', () => { dragging = false })
+  // ── Touch (orbit + pinch-to-zoom) ─────────────────────────
+  renderer.domElement.style.touchAction = 'none'
+  let pinchDist0 = null
+
+  function onTouchStart(e) {
+    if (e.touches.length === 2) {
+      dragging = false
+      pinchDist0 = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      )
+    } else {
+      dragStartX = e.touches[0].clientX; dragStartY = e.touches[0].clientY
+      dragging = true; prev.x = dragStartX; prev.y = dragStartY
+      pinchDist0 = null
+    }
+  }
+  function onTouchMove(e) {
+    e.preventDefault()
+    if (e.touches.length === 2 && pinchDist0 !== null) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      )
+      cameraTargetZ = Math.max(0.5, Math.min(30, cameraTargetZ - (dist - pinchDist0) * 0.06))
+      pinchDist0 = dist
+    } else if (e.touches.length === 1 && dragging) {
+      const dx = e.touches[0].clientX - prev.x, dy = e.touches[0].clientY - prev.y
+      targetY += dx * 0.004; targetX += dy * 0.004
+      velX = dx * 0.002;     velY = dy * 0.002
+      prev.x = e.touches[0].clientX; prev.y = e.touches[0].clientY
+    }
+  }
+  function onTouchEnd() { dragging = false; pinchDist0 = null }
+
+  renderer.domElement.addEventListener('touchstart', onTouchStart, { passive: true })
+  renderer.domElement.addEventListener('touchmove',  onTouchMove,  { passive: false })
+  renderer.domElement.addEventListener('touchend',   onTouchEnd)
 
   // ── Hand cursor — on body so it stays above ff-focus-overlay ─
   const handCursor = document.createElement('div')
@@ -444,6 +469,9 @@ export function initGlobe(container, photos) {
   container._cleanup = () => {
     document.removeEventListener('hand:move', onHandMove)
     window.removeEventListener('resize', onResize)
+    renderer.domElement.removeEventListener('touchstart', onTouchStart)
+    renderer.domElement.removeEventListener('touchmove',  onTouchMove)
+    renderer.domElement.removeEventListener('touchend',   onTouchEnd)
     if (rafId) cancelAnimationFrame(rafId)
     if (cursorRafId) cancelAnimationFrame(cursorRafId)
     handCursor.remove()

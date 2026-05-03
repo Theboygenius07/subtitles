@@ -129,11 +129,16 @@ function initAbout() {
     const popup = document.createElement('div')
     popup.className = 'about-popup'
 
+    const mobile = window.matchMedia('(pointer: coarse)').matches
+
     const VIEWS = [
       {
         name: 'Horizontal', color: '#4f8ef7',
         icon: '<path d="M12.417 1.96c.722 0 1.307.577 1.307 1.29v9.185c0 .712-.585 1.289-1.307 1.289h-1.96c-.722 0-1.307-.577-1.307-1.29V3.25c0-.712.585-1.289 1.307-1.289h1.96zM3.268 1.96c-.722 0-1.307.577-1.307 1.29v9.185c0 .712.585 1.289 1.307 1.289h1.96c.722 0 1.307-.577 1.307-1.29V3.25c0-.712-.585-1.289-1.307-1.289h-1.96z" stroke="currentColor" stroke-width="1.3"/>',
-        controls: [
+        controls: mobile ? [
+          { action: 'Browse',     keys: ['Swipe left/right'] },
+          { action: 'Open photo', keys: ['Tap'] },
+        ] : [
           { action: 'Browse',     keys: ['← →', 'Scroll'] },
           { action: 'Open photo', keys: ['Click'] },
         ],
@@ -141,7 +146,10 @@ function initAbout() {
       {
         name: 'Vertical', color: '#a78bf7',
         icon: '<path d="M13.724 12.417c0 .722-.577 1.307-1.289 1.307H3.25c-.712 0-1.289-.585-1.289-1.307v-1.96c0-.722.577-1.307 1.289-1.307h9.185c.712 0 1.289.585 1.289 1.307v1.96zM13.724 3.267c0-.722-.577-1.307-1.289-1.307H3.25c-.712 0-1.289.585-1.289 1.307v1.96c0 .722.577 1.307 1.289 1.307h9.185c.712 0 1.289-.585 1.289-1.307v-1.96z" stroke="currentColor" stroke-width="1.3"/>',
-        controls: [
+        controls: mobile ? [
+          { action: 'Browse',     keys: ['Swipe up/down'] },
+          { action: 'Open photo', keys: ['Tap'] },
+        ] : [
           { action: 'Browse',     keys: ['↑ ↓', 'Scroll'] },
           { action: 'Open photo', keys: ['Click'] },
         ],
@@ -149,7 +157,11 @@ function initAbout() {
       {
         name: 'Canvas', color: '#5bb8a4',
         icon: '<path d="M12.417 1.96c.722 0 1.307.577 1.307 1.29v2.2c0 .712-.585 1.289-1.307 1.289h-1.96c-.722 0-1.307-.577-1.307-1.29V3.25c0-.712.585-1.289 1.307-1.289h1.96zM3.268 1.96c-.722 0-1.307.577-1.307 1.29v2.2c0 .712.585 1.289 1.307 1.289h1.96c.722 0 1.307-.577 1.307-1.29V3.25c0-.712-.585-1.289-1.307-1.289h-1.96zM12.417 8.945c.722 0 1.307.577 1.307 1.29v2.2c0 .712-.585 1.289-1.307 1.289h-1.96c-.722 0-1.307-.577-1.307-1.29v-2.2c0-.712.585-1.289 1.307-1.289h1.96zM3.268 8.945c-.722 0-1.307.577-1.307 1.29v2.2c0 .712.585 1.289 1.307 1.289h1.96c.722 0 1.307-.577 1.307-1.29v-2.2c0-.712-.585-1.289-1.307-1.289h-1.96z" stroke="currentColor" stroke-width="1.3"/>',
-        controls: [
+        controls: mobile ? [
+          { action: 'Pan',        keys: ['Drag'] },
+          { action: 'Open photo', keys: ['Tap'] },
+          { action: 'Close',      keys: ['Tap outside'] },
+        ] : [
           { action: 'Pan',        keys: ['Drag'] },
           { action: 'Open photo', keys: ['Click'] },
           { action: 'Close',      keys: ['Esc'] },
@@ -158,7 +170,12 @@ function initAbout() {
       {
         name: 'Globe', color: '#f79c4f',
         icon: '<path d="M8.036 14.224c3.451 0 6.248-2.797 6.248-6.249 0-3.451-2.797-6.248-6.248-6.248m0 12.497c-3.451 0-6.248-2.797-6.248-6.249 0-3.451 2.797-6.248 6.248-6.248m0 12.497c-1.51 0-2.734-2.797-2.734-6.249 0-3.451 1.224-6.248 2.734-6.248m0 12.497c1.51 0 2.734-2.797 2.734-6.249 0-3.451-1.224-6.248-2.734-6.248M2.959 11.012c1.145-.655 3.047-1.084 5.199-1.084 2.247 0 4.22.467 5.345 1.172M2.959 4.938c1.145.655 3.047 1.084 5.199 1.084 2.247 0 4.22-.467 5.345-1.172" stroke="currentColor" stroke-width="1.155"/>',
-        controls: [
+        controls: mobile ? [
+          { action: 'Rotate',     keys: ['Drag'] },
+          { action: 'Zoom',       keys: ['Pinch'] },
+          { action: 'Open photo', keys: ['Tap'] },
+          { action: 'Close',      keys: ['Tap outside'] },
+        ] : [
           { action: 'Rotate',     keys: ['Drag'] },
           { action: 'Zoom',       keys: ['Scroll'] },
           { action: 'Open photo', keys: ['Click'] },
@@ -169,7 +186,13 @@ function initAbout() {
       {
         name: 'Gallery', color: '#f76b8e',
         icon: '<path d="M1.5 13.5h13M3 13.5V8M6 13.5V8M10 13.5V8M13 13.5V8M1.5 8h13M8 1.5l6.5 6.5H1.5L8 1.5z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>',
-        controls: [
+        controls: mobile ? [
+          { action: 'Walk',       keys: ['Swipe up/down'] },
+          { action: 'Turn',       keys: ['Swipe left/right'] },
+          { action: 'Open photo', keys: ['Tap'] },
+          { action: 'Navigate',   keys: ['Panel buttons'] },
+          { action: 'Close',      keys: ['Panel ×'] },
+        ] : [
           { action: 'Walk',       keys: ['W A S D', '↑ ↓ ← →'] },
           { action: 'Look',       keys: ['Drag'] },
           { action: 'Open photo', keys: ['Click'] },

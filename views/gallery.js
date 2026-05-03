@@ -184,15 +184,30 @@ export function initGallery(container, photos) {
   renderer.domElement.addEventListener('wheel', onWheel, { passive: false })
 
   // ── Touch ─────────────────────────────────────────────────
+  renderer.domElement.style.touchAction = 'none'
+  const isMobileTouch = window.matchMedia('(pointer: coarse)').matches
   let t0 = null, tDown = null
+
   function onTS(e) {
     t0    = { x: e.touches[0].clientX, y: e.touches[0].clientY }
     tDown = { ...t0, t: Date.now() }
   }
   function onTM(e) {
-    if (!t0) return
-    targetYaw   -= (e.touches[0].clientX - t0.x) * 0.004
-    targetPitch  = Math.max(-0.65, Math.min(0.55, targetPitch - (e.touches[0].clientY - t0.y) * 0.004))
+    if (!t0 || e.touches.length !== 1) return
+    e.preventDefault()
+    const dx = e.touches[0].clientX - t0.x
+    const dy = e.touches[0].clientY - t0.y
+    if (isMobileTouch && !focusState) {
+      // Mobile: swipe left/right = turn, swipe up/down = walk forward/back
+      const fwd = new THREE.Vector3(-Math.sin(camYaw), 0, -Math.cos(camYaw))
+      targetYaw -= dx * 0.004
+      targetPos.addScaledVector(fwd, -dy * 0.003)
+      clampPos()
+    } else {
+      // Desktop: drag = look around (yaw + pitch)
+      targetYaw   -= dx * 0.004
+      targetPitch  = Math.max(-0.65, Math.min(0.55, targetPitch - dy * 0.004))
+    }
     t0 = { x: e.touches[0].clientX, y: e.touches[0].clientY }
   }
   function onTE(e) {
@@ -204,7 +219,7 @@ export function initGallery(container, photos) {
     t0 = null; tDown = null
   }
   renderer.domElement.addEventListener('touchstart', onTS, { passive: true })
-  renderer.domElement.addEventListener('touchmove',  onTM, { passive: true })
+  renderer.domElement.addEventListener('touchmove',  onTM, { passive: false })
   renderer.domElement.addEventListener('touchend',   onTE)
 
   function clampPos() {
