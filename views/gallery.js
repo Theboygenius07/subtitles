@@ -58,7 +58,7 @@ export function initGallery(container, photos) {
   container.appendChild(renderer.domElement)
 
   const scene = new THREE.Scene()
-  scene.background = new THREE.Color(0xECE9E3)
+  scene.background = new THREE.Color(0x1E1C1A)
 
   const camera = new THREE.PerspectiveCamera(65, container.clientWidth / container.clientHeight, 0.1, 80)
   camera.rotation.order = 'YXZ'
@@ -118,8 +118,8 @@ export function initGallery(container, photos) {
 
   // ── Camera / navigation state ─────────────────────────────
   let camYaw = 0, camPitch = 0, targetYaw = 0, targetPitch = 0
-  const entryZ    = ROOM_D / 2 - 2
-  const targetPos = new THREE.Vector3(0, EYE_Y, entryZ + 7)
+  const entryZ    = ROOM_D / 2 - 10
+  const targetPos = new THREE.Vector3(0, EYE_Y, ROOM_D / 2 - 0.5)
   camera.position.copy(targetPos)
 
   // ── Focus state ───────────────────────────────────────────
@@ -520,7 +520,7 @@ function buildRoom(scene, floorBase, wallBase) {
   function wallMat(w, h) {
     return new THREE.MeshStandardMaterial({
       map: scaledTex(wallBase, w, h, 5.0),
-      color: 0xF0EDE8, roughness: 0.78, metalness: 0,
+      color: 0x8A8880, roughness: 0.78, metalness: 0,
     })
   }
 
