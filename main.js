@@ -211,7 +211,6 @@ function initAbout() {
       </div>`).join('')
 
     popup.innerHTML = `
-      <div class="about-accent"></div>
       <div class="about-specular"></div>
       <div class="about-inner">
         <div class="about-header">

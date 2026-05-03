@@ -1041,8 +1041,6 @@ body {
   position: relative;
   z-index: 1;
   padding: 22px 24px 24px;
-  max-height: min(560px, 80vh);
-  overflow-y: auto;
 }
 
 /* Header row */
@@ -1106,13 +1104,6 @@ body {
 }
 :root[data-theme="light"] .about-rule {
   background: rgba(0, 0, 0, 0.09);
-}
-
-/* Gradient accent bar at popup top */
-.about-accent {
-  height: 2.5px;
-  background: linear-gradient(to right, #4f8ef7, #a78bf7, #f79c4f, #f76b8e, #5bc777);
-  border-radius: 2px 2px 0 0;
 }
 
 /* Controls section label */
