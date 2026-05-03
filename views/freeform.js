@@ -78,6 +78,7 @@ export function initFreeform(container, photos) {
   let lastX = 0, lastY = 0, lastT = 0
   let didMove = false
   let rafId = null
+  let focusActive = false
 
   // Teleport seamlessly when we drift into an outer tile
   function normalize() {
@@ -196,6 +197,8 @@ export function initFreeform(container, photos) {
 
   // ── Focus overlay ─────────────────────────────────────────
   function openFocus(photo, srcEl) {
+    if (focusActive) return
+    focusActive = true
     const clamp = (v, a, b) => Math.max(a, Math.min(b, v))
 
     const src  = srcEl.getBoundingClientRect()
@@ -334,7 +337,7 @@ export function initFreeform(container, photos) {
         rotationX: 0, rotationY: 0,
         boxShadow: '0 0px 0px rgba(0,0,0,0)',
         duration: 0.55, ease: 'expo.inOut', overwrite: 'auto',
-        onComplete: () => overlay.remove()
+        onComplete: () => { overlay.remove(); focusActive = false }
       })
     }
     overlay.addEventListener('click', e => { if (e.target === overlay) close() })
@@ -344,7 +347,7 @@ export function initFreeform(container, photos) {
 
   // ── Click (only fires if user didn't pan) ──────────────────
   container.addEventListener('click', e => {
-    if (didMove) return
+    if (didMove || focusActive) return
     const cardEl = e.target.closest('.ff-card')
     if (!cardEl) return
     const cardX = (parseInt(cardEl.style.left) % GRID_W + GRID_W) % GRID_W

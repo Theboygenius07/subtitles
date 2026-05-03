@@ -187,7 +187,7 @@ function initAbout() {
         name: 'Gallery', color: '#f76b8e',
         icon: '<path d="M1.5 13.5h13M3 13.5V8M6 13.5V8M10 13.5V8M13 13.5V8M1.5 8h13M8 1.5l6.5 6.5H1.5L8 1.5z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>',
         controls: mobile ? [
-          { action: 'Walk',       keys: ['Swipe up/down'] },
+          { action: 'Walk',       keys: ['Swipe up/down', 'Pinch'] },
           { action: 'Turn',       keys: ['Swipe left/right'] },
           { action: 'Open photo', keys: ['Tap'] },
           { action: 'Navigate',   keys: ['Panel buttons'] },
