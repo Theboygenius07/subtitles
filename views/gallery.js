@@ -186,31 +186,49 @@ export function initGallery(container, photos) {
   // ── Touch ─────────────────────────────────────────────────
   renderer.domElement.style.touchAction = 'none'
   const isMobileTouch = window.matchMedia('(pointer: coarse)').matches
-  let t0 = null, tDown = null
+  let t0 = null, tDown = null, pinchDist0 = null
 
   function onTS(e) {
-    t0    = { x: e.touches[0].clientX, y: e.touches[0].clientY }
-    tDown = { ...t0, t: Date.now() }
+    if (e.touches.length === 2) {
+      t0 = null; tDown = null
+      pinchDist0 = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      )
+    } else {
+      t0    = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+      tDown = { ...t0, t: Date.now() }
+      pinchDist0 = null
+    }
   }
   function onTM(e) {
-    if (!t0 || e.touches.length !== 1) return
     e.preventDefault()
-    const dx = e.touches[0].clientX - t0.x
-    const dy = e.touches[0].clientY - t0.y
-    if (isMobileTouch && !focusState) {
-      // Mobile: swipe left/right = turn, swipe up/down = walk forward/back
+    if (e.touches.length === 2 && pinchDist0 !== null && !focusState) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      )
       const fwd = new THREE.Vector3(-Math.sin(camYaw), 0, -Math.cos(camYaw))
-      targetYaw -= dx * 0.004
-      targetPos.addScaledVector(fwd, -dy * 0.003)
+      targetPos.addScaledVector(fwd, (dist - pinchDist0) * 0.018)
       clampPos()
-    } else {
-      // Desktop: drag = look around (yaw + pitch)
-      targetYaw   -= dx * 0.004
-      targetPitch  = Math.max(-0.65, Math.min(0.55, targetPitch - dy * 0.004))
+      pinchDist0 = dist
+    } else if (e.touches.length === 1 && t0) {
+      const dx = e.touches[0].clientX - t0.x
+      const dy = e.touches[0].clientY - t0.y
+      if (isMobileTouch && !focusState) {
+        const fwd = new THREE.Vector3(-Math.sin(camYaw), 0, -Math.cos(camYaw))
+        targetYaw -= dx * 0.004
+        targetPos.addScaledVector(fwd, -dy * 0.003)
+        clampPos()
+      } else {
+        targetYaw   -= dx * 0.004
+        targetPitch  = Math.max(-0.65, Math.min(0.55, targetPitch - dy * 0.004))
+      }
+      t0 = { x: e.touches[0].clientX, y: e.touches[0].clientY }
     }
-    t0 = { x: e.touches[0].clientX, y: e.touches[0].clientY }
   }
   function onTE(e) {
+    if (e.touches.length === 0) pinchDist0 = null
     if (!tDown) return
     const tc = e.changedTouches[0]
     if (Math.hypot(tc.clientX - tDown.x, tc.clientY - tDown.y) < 8 && Date.now() - tDown.t < 280) {
