@@ -1326,3 +1326,385 @@ body {
     bottom: 130px;
   }
 }
+
+/* ─── PP Neue Montreal ───────────────────────────────────── */
+
+@font-face {
+  font-family: 'PPNeueMontreal';
+  src: url('/assets/fonts/ppneuemontreal-book.otf') format('opentype');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'PPNeueMontreal';
+  src: url('/assets/fonts/ppneuemontreal-medium.otf') format('opentype');
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'PPNeueMontreal';
+  src: url('/assets/fonts/ppneuemontreal-bold.otf') format('opentype');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'PPNeueMontreal';
+  src: url('/assets/fonts/ppneuemontreal-thin.otf') format('opentype');
+  font-weight: 200;
+  font-display: swap;
+}
+
+/* ─── Theme toggle (floating, bottom-right) ──────────────── */
+
+.theme-toggle-float {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 201;
+  width: 33.25px;
+  height: 33.25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5.944px;
+  border: none;
+  cursor: pointer;
+  background: rgba(95,96,103,0.70);
+  backdrop-filter: blur(2.5px);
+  -webkit-backdrop-filter: blur(2.5px);
+  color: rgba(255,255,255,0.50);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.theme-toggle-float:hover { background: rgba(75,76,83,0.85); color: rgba(255,255,255,0.88); }
+:root[data-theme="light"] .theme-toggle-float { background: rgba(195,192,187,0.70); color: rgba(0,0,0,0.60); }
+:root[data-theme="light"] .theme-toggle-float:hover { background: rgba(0,0,0,0.09); color: rgba(0,0,0,0.90); }
+
+/* icon visibility handled by global .icon-sun / .icon-moon rules */
+
+/* ─── Status bar ─────────────────────────────────────────── */
+
+#status-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  pointer-events: none;
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+#sb-presence { display: flex; align-items: center; gap: 5px; }
+.sb-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: #1e9a64;
+  box-shadow: 0 0 5px rgba(30,154,100,0.7);
+  animation: pulse-dot 2.4s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%,100% { opacity: 1; } 50% { opacity: .4; }
+}
+
+/* ─── Visitor sub-panel ──────────────────────────────────── */
+
+.vc-sub-panel {
+  position: fixed;
+  bottom: 72px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 199;
+  display: none;
+  align-items: center;
+  gap: 2px;
+  background: rgba(60,61,67,0.72);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 0.5px solid rgba(255,255,255,0.08);
+  border-radius: 9.5px;
+  padding: 2.375px;
+}
+:root[data-theme="light"] .vc-sub-panel { background: rgba(220,218,214,0.78); border-color: rgba(0,0,0,0.06); }
+
+#view-visitor.active ~ * .vc-sub-panel,
+.vc-sub-panel.visible { display: flex; }
+
+.vc-tab {
+  display: flex; align-items: center; gap: 5px;
+  height: 29px; padding: 0 12px;
+  border-radius: 7px; border: none; cursor: pointer;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.03em;
+  background: transparent;
+  color: rgba(255,255,255,0.45);
+  transition: background 0.15s, color 0.15s;
+}
+.vc-tab:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.75); }
+.vc-tab.active { background: rgba(255,255,255,0.10); color: rgba(255,255,255,0.95); }
+:root[data-theme="light"] .vc-tab { color: rgba(0,0,0,0.45); }
+:root[data-theme="light"] .vc-tab:hover { background: rgba(0,0,0,0.05); color: rgba(0,0,0,0.75); }
+:root[data-theme="light"] .vc-tab.active { background: rgba(0,0,0,0.10); color: rgba(0,0,0,0.90); }
+
+/* ─── Visitor view container ─────────────────────────────── */
+
+.vc-view { position: absolute; inset: 0; }
+
+.vc-section {
+  position: absolute; inset: 0;
+  display: none;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.vc-section.active { display: block; }
+.vc-section--globe { display: none; }
+.vc-section--globe.active { display: block; }
+
+/* ─── Sign view ──────────────────────────────────────────── */
+
+.vc-sign-wrap {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 72px 28px 130px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  font-family: 'PPNeueMontreal', system-ui, sans-serif;
+}
+
+.vc-header { text-align: center; display: flex; flex-direction: column; gap: 8px; }
+.vc-welcome-title {
+  font-family: 'PPNeueMontreal', system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin: 0;
+}
+.vc-welcome-sub {
+  font-family: 'PPNeueMontreal', system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text);
+  margin: 0;
+  opacity: .75;
+}
+
+.vc-preview {
+  display: block;
+  border-radius: 18px;
+  box-shadow:
+    0 2px 0 rgba(255,255,255,0.06) inset,
+    0 32px 80px rgba(0,0,0,0.55),
+    0 8px 24px rgba(0,0,0,0.30),
+    0 0 0 1px rgba(255,255,255,0.05);
+  max-width: 100%;
+  transform: perspective(900px) rotateX(3deg);
+  transition: transform 0.4s ease;
+}
+.vc-preview:hover { transform: perspective(900px) rotateX(0deg); }
+
+.vc-form { width: 100%; display: flex; flex-direction: column; gap: 20px; }
+
+.vc-field { display: flex; flex-direction: column; gap: 8px; }
+
+.vc-label-row { display: flex; align-items: baseline; justify-content: space-between; }
+.vc-label {
+  font-family: 'PPNeueMontreal', system-ui, sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.vc-optional {
+  font-family: 'PPNeueMontreal', system-ui, sans-serif;
+  font-size: 9px; color: var(--muted); letter-spacing: 0.06em; opacity: .7;
+}
+
+.vc-name-row { display: flex; gap: 8px; }
+
+.vc-input {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 400;
+  font-family: 'PPNeueMontreal', system-ui, sans-serif;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  box-sizing: border-box;
+}
+.vc-input::placeholder { color: var(--muted); opacity: .5; }
+.vc-input:focus { border-color: rgba(255,255,255,0.22); background: rgba(255,255,255,0.06); }
+:root[data-theme="light"] .vc-input { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.09); }
+:root[data-theme="light"] .vc-input:focus { border-color: rgba(0,0,0,0.25); background: rgba(0,0,0,0.05); }
+.vc-textarea { resize: none; line-height: 1.55; }
+
+.vc-icon-btn {
+  flex-shrink: 0; width: 42px; height: 42px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+  color: var(--muted); cursor: pointer;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+.vc-icon-btn:hover { background: rgba(255,255,255,0.10); color: var(--text); border-color: rgba(255,255,255,0.16); }
+:root[data-theme="light"] .vc-icon-btn { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.09); }
+
+.vc-material-row { display: flex; gap: 6px; }
+.vc-mat-btn {
+  flex: 1; padding: 10px 0;
+  border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  color: var(--muted);
+  font-family: 'PPNeueMontreal', system-ui, sans-serif;
+  font-size: 12px; font-weight: 500; letter-spacing: 0.04em; cursor: pointer;
+  transition: all 0.18s;
+}
+.vc-mat-btn:hover { background: rgba(255,255,255,0.07); color: var(--text); border-color: rgba(255,255,255,0.14); }
+.vc-mat-btn.active {
+  background: rgba(255,255,255,0.11); border-color: rgba(255,255,255,0.22);
+  color: var(--text); font-weight: 600;
+}
+:root[data-theme="light"] .vc-mat-btn { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.09); }
+:root[data-theme="light"] .vc-mat-btn.active { background: rgba(0,0,0,0.09); border-color: rgba(0,0,0,0.20); }
+
+.vc-swatch-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.vc-swatch {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 2px solid transparent; cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+.vc-swatch:hover { transform: scale(1.18); box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+.vc-swatch.active { border-color: var(--text); transform: scale(1.12); box-shadow: 0 0 0 3px rgba(255,255,255,0.15), 0 4px 12px rgba(0,0,0,0.4); }
+
+.vc-custom-color {
+  display: flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.16);
+  cursor: pointer; color: var(--muted);
+  transition: color 0.15s, border-color 0.15s, transform 0.15s;
+}
+.vc-custom-color:hover { color: var(--text); border-color: rgba(255,255,255,0.32); transform: scale(1.12); }
+.vc-custom-color input[type="color"] { display: none; }
+:root[data-theme="light"] .vc-custom-color { border-color: rgba(0,0,0,0.16); }
+
+/* ─── Signature canvas ───────────────────────────────────── */
+
+.vc-sig-canvas {
+  display: block; width: 100%;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.02);
+  cursor: crosshair; touch-action: none;
+  height: 70px;
+  transition: border-color 0.2s;
+}
+.vc-sig-canvas:active { border-color: rgba(255,255,255,0.20); }
+:root[data-theme="light"] .vc-sig-canvas { border-color: rgba(0,0,0,0.09); background: rgba(0,0,0,0.02); }
+
+.vc-clear-sig {
+  align-self: flex-end; background: none; border: none; cursor: pointer;
+  font-family: 'PPNeueMontreal', system-ui, sans-serif;
+  font-size: 10px; font-weight: 500; letter-spacing: 0.08em;
+  color: var(--muted); padding: 0; opacity: .6;
+  transition: opacity 0.15s;
+}
+.vc-clear-sig:hover { opacity: 1; }
+
+/* ─── Submit + success ───────────────────────────────────── */
+
+.vc-submit {
+  width: 100%; padding: 15px;
+  background: var(--text); color: var(--bg);
+  border: none; border-radius: 12px;
+  font-family: 'PPNeueMontreal', system-ui, sans-serif;
+  font-size: 13px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer;
+  transition: opacity 0.15s, transform 0.15s;
+}
+.vc-submit:hover { opacity: .88; transform: translateY(-1px); }
+.vc-submit:active { transform: translateY(0); }
+.vc-submit:disabled { opacity: .35; cursor: default; transform: none; }
+
+.vc-disclaimer {
+  font-family: 'PPNeueMontreal', system-ui, sans-serif;
+  font-size: 10px; color: var(--muted); text-align: center;
+  letter-spacing: 0.06em; margin: 0; opacity: .55;
+}
+
+.vc-success { display: flex; flex-direction: column; align-items: center; gap: 24px; width: 100%; }
+.vc-success-no {
+  font-family: 'PPNeueMontreal', system-ui, sans-serif;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--muted); text-align: center; margin: 0;
+}
+.vc-success-no span { color: var(--text); font-weight: 700; }
+
+.vc-success-btns { display: flex; gap: 10px; width: 100%; }
+.vc-dl-btn, .vc-view-all-btn {
+  flex: 1; padding: 13px;
+  border-radius: 10px; border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  font-family: 'PPNeueMontreal', system-ui, sans-serif;
+  font-size: 12px; font-weight: 500; letter-spacing: 0.05em; cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.vc-dl-btn:hover, .vc-view-all-btn:hover { background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.18); }
+:root[data-theme="light"] .vc-dl-btn, :root[data-theme="light"] .vc-view-all-btn {
+  border-color: rgba(0,0,0,0.10); background: rgba(0,0,0,0.04);
+}
+
+/* ─── Visitor globe ──────────────────────────────────────── */
+
+.vc-section--globe { position: absolute; inset: 0; overflow: hidden; }
+
+.vc-globe-toggle {
+  position: absolute;
+  top: 80px; right: 16px;
+  z-index: 10;
+  padding: 7px 13px;
+  border-radius: 99px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(20,20,20,0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: rgba(255,255,255,0.70);
+  font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.vc-globe-toggle:hover { background: rgba(40,40,40,0.72); color: #fff; }
+.vc-globe-toggle.active { background: rgba(255,255,255,0.14); color: #fff; border-color: rgba(255,255,255,0.26); }
+
+.vc-globe-empty {
+  position: absolute;
+  top: 50%; left: 50%; transform: translate(-50%,-50%);
+  font-family: 'Courier New', monospace; font-size: 11px;
+  letter-spacing: 0.10em; color: var(--muted);
+  pointer-events: none; text-align: center;
+}
+
+/* ─── Admin delete button ────────────────────────────────── */
+
+.vc-admin-del {
+  position: absolute; bottom: 14px; left: 14px; z-index: 3;
+  padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer;
+  background: rgba(200,40,40,0.55); color: #fff;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+  backdrop-filter: blur(10px); transition: background 0.15s;
+}
+.vc-admin-del:hover { background: rgba(200,40,40,0.80); }
+.vc-admin-del--confirm { background: rgba(220,20,20,0.90); }
