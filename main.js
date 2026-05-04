@@ -3,10 +3,8 @@ import { initVertical }   from './views/vertical.js'
 import { initFreeform }   from './views/freeform.js'
 import { initGlobe }      from './views/globe.js'
 import { initGallery }    from './views/gallery.js'
-import { initVisitor }    from './views/visitor.js'
 import { initModal }      from './components/modal.js'
 import { tracker, preloadVision } from './components/tracking.js'
-import { sb }             from './supabase.js'
 import gsap from 'gsap'
 
 // ─── Data ─────────────────────────────────────────────────
@@ -41,7 +39,6 @@ const viewLoaders = {
   freeform:   initFreeform,
   globe:      initGlobe,
   gallery:    initGallery,
-  visitor:    initVisitor,
 }
 
 let activeView = null
@@ -316,29 +313,6 @@ function initAbout() {
   })
 }
 
-// ─── Status bar ───────────────────────────────────────────
-
-function initStatusBar() {
-  const clockEl = document.getElementById('sb-clock')
-  const countEl = document.getElementById('sb-count')
-
-  function tick() {
-    clockEl.textContent = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-  }
-  tick()
-  setInterval(tick, 1000)
-
-  const sessionId = Math.random().toString(36).slice(2)
-  const presChannel = sb.channel('app-presence', { config: { presence: { key: sessionId } } })
-  presChannel.on('presence', { event: 'sync' }, () => {
-    const n = Object.keys(presChannel.presenceState()).length
-    countEl.textContent = n
-  })
-  presChannel.subscribe(async status => {
-    if (status === 'SUBSCRIBED') await presChannel.track({ at: new Date().toISOString() })
-  })
-}
-
 // ─── Boot ─────────────────────────────────────────────────
 
 async function init() {
@@ -346,17 +320,11 @@ async function init() {
   initTrackToggle()
   initAbout()
   initModal()
-  initStatusBar()
   preloadVision()   // start downloading WASM in background immediately
   await loadData()
 
   document.querySelectorAll('.cp-view-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      activateView(btn.dataset.view)
-      // Show sub-panel only when visitor view is active
-      const panel = document.querySelector('.vc-sub-panel')
-      if (panel) panel.classList.toggle('visible', btn.dataset.view === 'visitor')
-    })
+    btn.addEventListener('click', () => activateView(btn.dataset.view))
   })
 
   document.getElementById('meBtn').addEventListener('click', () => {
