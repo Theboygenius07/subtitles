@@ -1467,33 +1467,35 @@ body {
 /* ─── Sign view ──────────────────────────────────────────── */
 
 .vc-sign-wrap {
-  max-width: 480px;
+  max-width: 440px;
   margin: 0 auto;
-  padding: 72px 28px 130px;
+  padding: 80px 24px 140px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 28px;
+  gap: 32px;
   font-family: 'PPNeueMontreal', system-ui, sans-serif;
 }
 
-.vc-header { text-align: center; display: flex; flex-direction: column; gap: 8px; }
+.vc-header { text-align: center; display: flex; flex-direction: column; gap: 10px; }
 .vc-welcome-title {
   font-family: 'PPNeueMontreal', system-ui, sans-serif;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.28em;
   color: var(--muted);
   text-transform: uppercase;
   margin: 0;
+  opacity: .6;
 }
 .vc-welcome-sub {
   font-family: 'PPNeueMontreal', system-ui, sans-serif;
-  font-size: 15px;
+  font-size: 22px;
   font-weight: 400;
   color: var(--text);
   margin: 0;
-  opacity: .75;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
 .vc-preview {
@@ -1501,18 +1503,43 @@ body {
   border-radius: 18px;
   box-shadow:
     0 2px 0 rgba(255,255,255,0.06) inset,
-    0 32px 80px rgba(0,0,0,0.55),
-    0 8px 24px rgba(0,0,0,0.30),
-    0 0 0 1px rgba(255,255,255,0.05);
+    0 40px 100px rgba(0,0,0,0.65),
+    0 12px 32px rgba(0,0,0,0.35),
+    0 0 0 1px rgba(255,255,255,0.06);
   max-width: 100%;
-  transform: perspective(900px) rotateX(3deg);
-  transition: transform 0.4s ease;
+  transform: perspective(1200px) rotateX(4deg);
+  transition: transform 0.5s cubic-bezier(0.23,1,0.32,1);
 }
-.vc-preview:hover { transform: perspective(900px) rotateX(0deg); }
+.vc-preview:hover { transform: perspective(1200px) rotateX(0deg); }
 
-.vc-form { width: 100%; display: flex; flex-direction: column; gap: 20px; }
+.vc-form-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.07) 30%, rgba(255,255,255,0.07) 70%, transparent);
+}
+
+.vc-form { width: 100%; display: flex; flex-direction: column; gap: 16px; }
 
 .vc-field { display: flex; flex-direction: column; gap: 8px; }
+
+.vc-style-group {
+  width: 100%;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+:root[data-theme="light"] .vc-style-group { background: rgba(0,0,0,0.02); border-color: rgba(0,0,0,0.07); }
+
+.vc-style-row {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+.vc-style-row .vc-field { flex: 1; min-width: 0; }
 
 .vc-label-row { display: flex; align-items: baseline; justify-content: space-between; }
 .vc-label {
@@ -1604,14 +1631,15 @@ body {
 
 .vc-sig-canvas {
   display: block; width: 100%;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.02);
+  background: rgba(255,255,255,0.025);
   cursor: crosshair; touch-action: none;
-  height: 70px;
-  transition: border-color 0.2s;
+  height: 90px;
+  transition: border-color 0.2s, background 0.2s;
 }
-.vc-sig-canvas:active { border-color: rgba(255,255,255,0.20); }
+.vc-sig-canvas:hover { border-color: rgba(255,255,255,0.14); }
+.vc-sig-canvas:active { border-color: rgba(255,255,255,0.22); background: rgba(255,255,255,0.04); }
 :root[data-theme="light"] .vc-sig-canvas { border-color: rgba(0,0,0,0.09); background: rgba(0,0,0,0.02); }
 
 .vc-clear-sig {

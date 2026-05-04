@@ -226,7 +226,7 @@ async function renderCard(canvas, data) {
 function buildSigCanvas(initialInk) {
   const el = document.createElement('canvas')
   el.className = 'vc-sig-canvas'
-  const W = 296, H = 60
+  const W = 360, H = 90
   el.width = W*2; el.height = H*2
   el.style.width = '100%'; el.style.height = H+'px'
   const ctx = el.getContext('2d')
@@ -288,16 +288,17 @@ function buildSignView(onDone) {
 
   wrap.innerHTML = `
     <div class="vc-header">
-      <p class="vc-welcome-title">SUBTITLES</p>
-      <p class="vc-welcome-sub">Welcome, visitor. I hope you enjoy your time here.</p>
+      <p class="vc-welcome-title">I WAS HERE</p>
+      <p class="vc-welcome-sub">Leave your mark on this collection.</p>
     </div>`
   wrap.appendChild(preview)
+  wrap.insertAdjacentHTML('beforeend', '<div class="vc-form-divider"></div>')
 
   const form = document.createElement('div')
   form.className = 'vc-form'
   form.innerHTML = `
     <div class="vc-field">
-      <label class="vc-label">NAME:</label>
+      <label class="vc-label">NAME</label>
       <div class="vc-name-row">
         <input class="vc-input" id="vc-name" type="text" maxlength="40" placeholder="Your name or alias" value="${state.name}">
         <button class="vc-icon-btn" id="vc-rand" aria-label="Randomise name">
@@ -307,42 +308,46 @@ function buildSignView(onDone) {
     </div>
     <div class="vc-field">
       <div class="vc-label-row">
-        <label class="vc-label">NOTE:</label>
-        <span class="vc-optional">optional — <span id="vc-note-len">0</span>/${NOTE_MAX}</span>
+        <label class="vc-label">NOTE</label>
+        <span class="vc-optional">optional · <span id="vc-note-len">0</span>/${NOTE_MAX}</span>
       </div>
       <textarea class="vc-input vc-textarea" id="vc-note" maxlength="${NOTE_MAX}" rows="2" placeholder="Something you said, heard, or thought…"></textarea>
     </div>
-    <div class="vc-field">
-      <label class="vc-label">MATERIAL:</label>
-      <div class="vc-material-row">
-        ${['solid','metal','glass'].map(m=>`<button class="vc-mat-btn${m==='solid'?' active':''}" data-mat="${m}">${m.charAt(0).toUpperCase()+m.slice(1)}</button>`).join('')}
+    <div class="vc-style-group">
+      <div class="vc-field">
+        <label class="vc-label">MATERIAL</label>
+        <div class="vc-material-row">
+          ${['solid','metal','glass'].map(m=>`<button class="vc-mat-btn${m==='solid'?' active':''}" data-mat="${m}">${m.charAt(0).toUpperCase()+m.slice(1)}</button>`).join('')}
+        </div>
       </div>
-    </div>
-    <div class="vc-field">
-      <label class="vc-label">COLOUR:</label>
-      <div class="vc-swatch-row" id="vc-color-row">
-        ${PRESETS.map(c=>`<button class="vc-swatch${c===state.color?' active':''}" data-color="${c}" style="background:${c}" aria-label="${c}"></button>`).join('')}
-        <label class="vc-custom-color" title="Custom colour">
-          <input type="color" id="vc-color-custom" value="${state.color}">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 9C5 7.5 5.8 7 7 7s2 .5 2.5 2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><circle cx="5" cy="5.5" r=".7" fill="currentColor"/><circle cx="9" cy="5.5" r=".7" fill="currentColor"/></svg>
-        </label>
-      </div>
-    </div>
-    <div class="vc-field">
-      <label class="vc-label">INK:</label>
-      <div class="vc-swatch-row" id="vc-ink-row">
-        ${INK_PRESETS.map(c=>`<button class="vc-swatch vc-ink-swatch${c===state.inkColor?' active':''}" data-ink="${c}" style="background:${c}" aria-label="${c}"></button>`).join('')}
-        <label class="vc-custom-color" title="Custom ink colour">
-          <input type="color" id="vc-ink-custom" value="${state.inkColor}">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 10l3-8 3 8M5 7h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </label>
+      <div class="vc-style-row">
+        <div class="vc-field">
+          <label class="vc-label">COLOUR</label>
+          <div class="vc-swatch-row" id="vc-color-row">
+            ${PRESETS.map(c=>`<button class="vc-swatch${c===state.color?' active':''}" data-color="${c}" style="background:${c}" aria-label="${c}"></button>`).join('')}
+            <label class="vc-custom-color" title="Custom colour">
+              <input type="color" id="vc-color-custom" value="${state.color}">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 9C5 7.5 5.8 7 7 7s2 .5 2.5 2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><circle cx="5" cy="5.5" r=".7" fill="currentColor"/><circle cx="9" cy="5.5" r=".7" fill="currentColor"/></svg>
+            </label>
+          </div>
+        </div>
+        <div class="vc-field">
+          <label class="vc-label">INK</label>
+          <div class="vc-swatch-row" id="vc-ink-row">
+            ${INK_PRESETS.map(c=>`<button class="vc-swatch vc-ink-swatch${c===state.inkColor?' active':''}" data-ink="${c}" style="background:${c}" aria-label="${c}"></button>`).join('')}
+            <label class="vc-custom-color" title="Custom ink colour">
+              <input type="color" id="vc-ink-custom" value="${state.inkColor}">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 10l3-8 3 8M5 7h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </label>
+          </div>
+        </div>
       </div>
     </div>`
   wrap.appendChild(form)
 
   const sigField = document.createElement('div')
   sigField.className = 'vc-field'
-  sigField.innerHTML = '<label class="vc-label">SIGNATURE:</label>'
+  sigField.innerHTML = '<label class="vc-label">SIGNATURE</label>'
   sigField.appendChild(sig.el)
   const clearSig = document.createElement('button')
   clearSig.className = 'vc-clear-sig'; clearSig.textContent = 'Clear'
@@ -353,7 +358,7 @@ function buildSignView(onDone) {
   const submitBtn = document.createElement('button')
   submitBtn.className = 'vc-submit'; submitBtn.textContent = 'ENTER →'
   wrap.appendChild(submitBtn)
-  wrap.insertAdjacentHTML('beforeend', '<p class="vc-disclaimer">Your card appears in the visitor globe instantly.</p>')
+  wrap.insertAdjacentHTML('beforeend', '<p class="vc-disclaimer">Your card is permanent. Choose your words with care.</p>')
 
   // ── Wire inputs ──
   const nameEl = form.querySelector('#vc-name')
