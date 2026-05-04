@@ -111,7 +111,7 @@ export function initFreeform(container, photos) {
   }
 
   // ── Mouse ─────────────────────────────────────────────────
-  container.addEventListener('mousedown', e => {
+  const onMouseDown = e => {
     cancelMomentum()
     isPanning  = true
     didMove    = false
@@ -120,9 +120,9 @@ export function initFreeform(container, photos) {
     lastX      = e.clientX; lastY = e.clientY; lastT = Date.now()
     container.style.cursor = 'grabbing'
     e.preventDefault()
-  })
+  }
 
-  window.addEventListener('mousemove', e => {
+  const onMouseMove = e => {
     if (!isPanning) return
     const now = Date.now()
     const dt  = Math.max(1, now - lastT)
@@ -133,30 +133,34 @@ export function initFreeform(container, photos) {
     panY  = startPanY + (e.clientY - startY)
     if (Math.abs(e.clientX - startX) > 4 || Math.abs(e.clientY - startY) > 4) didMove = true
     apply()
-  })
+  }
 
-  window.addEventListener('mouseup', () => {
+  const onMouseUp = () => {
     if (!isPanning) return
     isPanning = false
     container.style.cursor = 'grab'
     if (Math.abs(velX) > 0.5 || Math.abs(velY) > 0.5) {
       rafId = requestAnimationFrame(momentum)
     }
-  })
+  }
+
+  container.addEventListener('mousedown', onMouseDown)
+  window.addEventListener('mousemove', onMouseMove)
+  window.addEventListener('mouseup', onMouseUp)
 
   // ── Touch ─────────────────────────────────────────────────
   let touch0 = null
 
-  container.addEventListener('touchstart', e => {
+  const onTouchStart = e => {
     cancelMomentum()
     didMove = false
     if (e.touches.length === 1) {
       touch0 = { x: e.touches[0].clientX, y: e.touches[0].clientY, panX, panY }
       lastX  = touch0.x; lastY = touch0.y; lastT = Date.now()
     }
-  }, { passive: true })
+  }
 
-  container.addEventListener('touchmove', e => {
+  const onTouchMove = e => {
     e.preventDefault()
     if (e.touches.length === 1 && touch0) {
       const now = Date.now()
@@ -170,18 +174,22 @@ export function initFreeform(container, photos) {
       if (Math.abs(panX - touch0.panX) > 4 || Math.abs(panY - touch0.panY) > 4) didMove = true
       apply()
     }
-  }, { passive: false })
+  }
 
-  container.addEventListener('touchend', () => {
+  const onTouchEnd = () => {
     touch0 = null
     if (Math.abs(velX) > 0.5 || Math.abs(velY) > 0.5) {
       rafId = requestAnimationFrame(momentum)
     }
-  })
+  }
+
+  container.addEventListener('touchstart', onTouchStart, { passive: true })
+  container.addEventListener('touchmove',  onTouchMove,  { passive: false })
+  container.addEventListener('touchend',   onTouchEnd)
 
   // ── Wheel / trackpad scroll ───────────────────────────────
   let wheelEnd = null
-  container.addEventListener('wheel', e => {
+  const onWheel = e => {
     e.preventDefault()
     if (rafId) { cancelAnimationFrame(rafId); rafId = null }
     panX -= e.deltaX
@@ -193,7 +201,8 @@ export function initFreeform(container, photos) {
     wheelEnd = setTimeout(() => {
       rafId = requestAnimationFrame(momentum)
     }, 80)
-  }, { passive: false })
+  }
+  container.addEventListener('wheel', onWheel, { passive: false })
 
   // ── Focus overlay ─────────────────────────────────────────
   function openFocus(photo, srcEl) {
@@ -346,7 +355,7 @@ export function initFreeform(container, photos) {
   }
 
   // ── Click (only fires if user didn't pan) ──────────────────
-  container.addEventListener('click', e => {
+  const onClick = e => {
     if (didMove || focusActive) return
     const cardEl = e.target.closest('.ff-card')
     if (!cardEl) return
@@ -356,7 +365,8 @@ export function initFreeform(container, photos) {
     const row   = Math.round(cardY / SLOT_H)
     const idx   = row * COLS + col
     if (idx >= 0 && idx < shuffled.length) openFocus(shuffled[idx], cardEl)
-  })
+  }
+  container.addEventListener('click', onClick)
 
   // ── Lazy load ─────────────────────────────────────────────
   const lazyObs = new IntersectionObserver(entries => {
@@ -491,6 +501,14 @@ export function initFreeform(container, photos) {
   // ── Cleanup ───────────────────────────────────────────────
   container._cleanup = () => {
     window.removeEventListener('resize', onResize)
+    window.removeEventListener('mousemove', onMouseMove)
+    window.removeEventListener('mouseup', onMouseUp)
+    container.removeEventListener('mousedown', onMouseDown)
+    container.removeEventListener('touchstart', onTouchStart)
+    container.removeEventListener('touchmove', onTouchMove)
+    container.removeEventListener('touchend', onTouchEnd)
+    container.removeEventListener('wheel', onWheel)
+    container.removeEventListener('click', onClick)
     document.removeEventListener('hand:move', onHandGesture)
     if (cursorRaf) cancelAnimationFrame(cursorRaf)
     cancelMomentum()
