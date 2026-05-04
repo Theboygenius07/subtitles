@@ -226,7 +226,7 @@ async function renderCard(canvas, data) {
 function buildSigCanvas(initialInk) {
   const el = document.createElement('canvas')
   el.className = 'vc-sig-canvas'
-  const W = 360, H = 90
+  const W = 480, H = 110
   el.width = W*2; el.height = H*2
   el.style.width = '100%'; el.style.height = H+'px'
   const ctx = el.getContext('2d')
@@ -272,205 +272,210 @@ function buildSigCanvas(initialInk) {
   }
 }
 
-// ── Sign view ──────────────────────────────────────────────────────────────────
+// ── Sign view (card-first with toolbar) ────────────────────────────────────────
 function buildSignView(onDone) {
-  const wrap = document.createElement('div')
-  wrap.className = 'vc-sign-wrap'
+  let state = { name: randName(), note: '', material: 'solid', color: PRESETS[0], inkColor: INK_PRESETS[0] }
+  let sigStrokes = []
+  const sig = buildSigCanvas(state.inkColor)
 
-  let state = { name: randName(), note: '', material: 'solid', color: PRESETS[0], inkColor: '#ffffff' }
+  // ── Stage (fills section) ──
+  const stage = document.createElement('div')
+  stage.className = 'vc-stage'
+  stage.innerHTML = `<div class="vc-welcome"><p class="vc-eyebrow">Subtitles · Visitor Registry</p><h2 class="vc-headline">I Was Here.</h2></div>`
 
   const preview = document.createElement('canvas')
   preview.className = 'vc-preview'
+  stage.appendChild(preview)
 
-  const sig = buildSigCanvas(state.inkColor)
-
-  function refresh() {
-    renderCard(preview, { ...state, strokes: sig.getStrokes() })
-    const r=parseInt(state.color.slice(1,3),16)||0, g=parseInt(state.color.slice(3,5),16)||0, b=parseInt(state.color.slice(5,7),16)||0
-    const glowA = state.material==='solid' ? 0.20 : state.material==='glass' ? 0.12 : 0.06
-    preview.style.boxShadow = `0 0 0 1px rgba(255,255,255,0.07),0 48px 120px rgba(0,0,0,0.72),0 16px 40px rgba(0,0,0,0.42),0 0 80px rgba(${r},${g},${b},${glowA})`
+  function applyGlow(el) {
+    const r=parseInt(state.color.slice(1,3),16)||0,g=parseInt(state.color.slice(3,5),16)||0,b=parseInt(state.color.slice(5,7),16)||0
+    const a=state.material==='solid'?.22:state.material==='glass'?.14:.07
+    el.style.boxShadow=`0 0 0 1px rgba(255,255,255,0.07),0 48px 120px rgba(0,0,0,0.72),0 16px 40px rgba(0,0,0,0.42),0 0 80px rgba(${r},${g},${b},${a})`
   }
 
-  wrap.innerHTML = `
-    <div class="vc-header">
-      <p class="vc-eyebrow">Subtitles · Visitor Registry</p>
-      <h2 class="vc-headline">I Was Here.</h2>
-      <p class="vc-welcome-sub">Leave your mark on this collection.</p>
-    </div>`
-  wrap.appendChild(preview)
-  wrap.insertAdjacentHTML('beforeend', '<div class="vc-form-divider"></div>')
+  function refresh() {
+    renderCard(preview, { ...state, strokes: sigStrokes })
+    applyGlow(preview)
+    signBtn.classList.toggle('has-sig', sigStrokes.length > 0)
+  }
 
-  const form = document.createElement('div')
-  form.className = 'vc-form'
-  form.innerHTML = `
-    <div class="vc-field">
-      <label class="vc-label">NAME</label>
-      <div class="vc-name-row">
-        <input class="vc-input" id="vc-name" type="text" maxlength="40" placeholder="Your name or alias" value="${state.name}">
-        <button class="vc-icon-btn" id="vc-rand" aria-label="Randomise name">
-          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5A4.5 4.5 0 1 0 6.5 2M2 2v4.5h4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-      </div>
-    </div>
-    <div class="vc-field">
-      <div class="vc-label-row">
-        <label class="vc-label">NOTE</label>
-        <span class="vc-optional">optional · <span id="vc-note-len">0</span>/${NOTE_MAX}</span>
-      </div>
-      <textarea class="vc-input vc-textarea" id="vc-note" maxlength="${NOTE_MAX}" rows="2" placeholder="Something you said, heard, or thought…"></textarea>
-    </div>
-    <div class="vc-style-group">
-      <div class="vc-field">
-        <label class="vc-label">MATERIAL</label>
-        <div class="vc-material-row">
-          ${['solid','metal','glass'].map(m=>`<button class="vc-mat-btn${m==='solid'?' active':''}" data-mat="${m}">${m.charAt(0).toUpperCase()+m.slice(1)}</button>`).join('')}
-        </div>
-      </div>
-      <div class="vc-style-row">
-        <div class="vc-field">
-          <label class="vc-label">COLOUR</label>
-          <div class="vc-swatch-row" id="vc-color-row">
-            ${PRESETS.map(c=>`<button class="vc-swatch${c===state.color?' active':''}" data-color="${c}" style="background:${c}" aria-label="${c}"></button>`).join('')}
-            <label class="vc-custom-color" title="Custom colour">
-              <input type="color" id="vc-color-custom" value="${state.color}">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 9C5 7.5 5.8 7 7 7s2 .5 2.5 2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><circle cx="5" cy="5.5" r=".7" fill="currentColor"/><circle cx="9" cy="5.5" r=".7" fill="currentColor"/></svg>
-            </label>
-          </div>
-        </div>
-        <div class="vc-field">
-          <label class="vc-label">INK</label>
-          <div class="vc-swatch-row" id="vc-ink-row">
-            ${INK_PRESETS.map(c=>`<button class="vc-swatch vc-ink-swatch${c===state.inkColor?' active':''}" data-ink="${c}" style="background:${c}" aria-label="${c}"></button>`).join('')}
-            <label class="vc-custom-color" title="Custom ink colour">
-              <input type="color" id="vc-ink-custom" value="${state.inkColor}">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 10l3-8 3 8M5 7h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </label>
-          </div>
-        </div>
-      </div>
-    </div>`
-  wrap.appendChild(form)
+  // ── Toolbar ──
+  const toolbar = document.createElement('div')
+  toolbar.className = 'vc-toolbar'
 
-  const sigField = document.createElement('div')
-  sigField.className = 'vc-field'
-  sigField.innerHTML = '<label class="vc-label">SIGNATURE</label>'
-  sigField.appendChild(sig.el)
-  const clearSig = document.createElement('button')
-  clearSig.className = 'vc-clear-sig'; clearSig.textContent = 'Clear'
-  clearSig.addEventListener('click', () => { sig.clear(); refresh() })
-  sigField.appendChild(clearSig)
-  wrap.appendChild(sigField)
+  // Name
+  const nameIn = document.createElement('input')
+  nameIn.className='vc-tb-input'; nameIn.type='text'; nameIn.maxLength=40
+  nameIn.placeholder='Your name…'; nameIn.value=state.name
+  nameIn.addEventListener('input', () => { state.name=nameIn.value; refresh() })
+  const randBtn = document.createElement('button')
+  randBtn.className='vc-tb-icon-btn'; randBtn.setAttribute('aria-label','Random name')
+  randBtn.innerHTML=`<svg width="11" height="11" viewBox="0 0 13 13" fill="none"><path d="M2 6.5A4.5 4.5 0 1 0 6.5 2M2 2v4.5h4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+  randBtn.addEventListener('click', () => { state.name=randName(); nameIn.value=state.name; refresh() })
+  const nameSec = document.createElement('div')
+  nameSec.className='vc-tb-sec vc-tb-name'; nameSec.append(nameIn, randBtn)
 
-  const submitBtn = document.createElement('button')
-  submitBtn.className = 'vc-submit'; submitBtn.textContent = 'ENTER →'
-  wrap.appendChild(submitBtn)
-  wrap.insertAdjacentHTML('beforeend', '<p class="vc-disclaimer">Your card is permanent. Choose your words with care.</p>')
-
-  // ── Wire inputs ──
-  const nameEl = form.querySelector('#vc-name')
-  nameEl.addEventListener('input', () => { state.name = nameEl.value; refresh() })
-  form.querySelector('#vc-rand').addEventListener('click', () => { state.name=randName(); nameEl.value=state.name; refresh() })
-
-  const noteEl = form.querySelector('#vc-note')
-  const noteLenEl = form.querySelector('#vc-note-len')
-  noteEl.addEventListener('input', () => { state.note=noteEl.value; noteLenEl.textContent=state.note.length; refresh() })
-
-  form.querySelector('.vc-material-row').addEventListener('click', e => {
-    const btn = e.target.closest('.vc-mat-btn'); if (!btn) return
-    state.material = btn.dataset.mat
-    form.querySelectorAll('.vc-mat-btn').forEach(b => b.classList.toggle('active', b===btn))
-    refresh()
-  })
-
-  form.querySelectorAll('.vc-swatch[data-color]').forEach(sw => {
-    sw.addEventListener('click', () => {
-      state.color = sw.dataset.color
-      form.querySelectorAll('.vc-swatch[data-color]').forEach(s => s.classList.toggle('active', s===sw))
-      form.querySelector('#vc-color-custom').value = state.color
+  // Material
+  const matSec = document.createElement('div')
+  matSec.className='vc-tb-sec vc-tb-mat'
+  ;['solid','metal','glass'].forEach(m => {
+    const b = document.createElement('button')
+    b.className=`vc-tb-mat-btn${m===state.material?' active':''}`
+    b.textContent=m.charAt(0).toUpperCase()+m.slice(1)
+    b.addEventListener('click', () => {
+      state.material=m
+      matSec.querySelectorAll('.vc-tb-mat-btn').forEach(x=>x.classList.toggle('active',x===b))
       refresh()
     })
-  })
-  form.querySelector('#vc-color-custom').addEventListener('input', e => {
-    state.color = e.target.value
-    form.querySelectorAll('.vc-swatch[data-color]').forEach(s => s.classList.remove('active'))
-    refresh()
+    matSec.appendChild(b)
   })
 
-  form.querySelectorAll('.vc-ink-swatch').forEach(sw => {
+  // Color
+  const colorSec = document.createElement('div')
+  colorSec.className='vc-tb-sec vc-tb-color'
+  PRESETS.forEach(c => {
+    const sw = document.createElement('button')
+    sw.className=`vc-tb-swatch${c===state.color?' active':''}`;sw.style.background=c;sw.setAttribute('aria-label',c)
     sw.addEventListener('click', () => {
-      state.inkColor = sw.dataset.ink; sig.setInk(state.inkColor)
-      form.querySelectorAll('.vc-ink-swatch').forEach(s => s.classList.toggle('active', s===sw))
+      state.color=c
+      colorSec.querySelectorAll('.vc-tb-swatch').forEach(s=>s.classList.toggle('active',s===sw))
       refresh()
     })
+    colorSec.appendChild(sw)
   })
-  form.querySelector('#vc-ink-custom').addEventListener('input', e => {
-    state.inkColor = e.target.value; sig.setInk(state.inkColor)
-    form.querySelectorAll('.vc-ink-swatch').forEach(s => s.classList.remove('active'))
+  const ccLabel=document.createElement('label'); ccLabel.className='vc-tb-custom'; ccLabel.title='Custom colour'
+  const ccIn=document.createElement('input'); ccIn.type='color'; ccIn.value=state.color
+  ccIn.addEventListener('input', e => {
+    state.color=e.target.value
+    colorSec.querySelectorAll('.vc-tb-swatch').forEach(s=>s.classList.remove('active'))
     refresh()
   })
+  ccLabel.append(ccIn)
+  ccLabel.insertAdjacentHTML('beforeend',`<svg width="11" height="11" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/></svg>`)
+  colorSec.appendChild(ccLabel)
 
-  sig.el.addEventListener('strokeend', refresh)
+  // Sign button
+  const signBtn = document.createElement('button')
+  signBtn.className='vc-tb-icon-btn vc-tb-sign-btn'; signBtn.setAttribute('aria-label','Add signature')
+  signBtn.innerHTML=`<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13c1-2 2.5-3.5 4-4s3 0 2 2-3 3-3 1 2-4 4-6 3-2 3-1-1 3-2 4" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="vc-tb-sig-dot"></span>`
+
+  // Submit
+  const subBtn = document.createElement('button')
+  subBtn.className='vc-tb-submit'; subBtn.textContent='Enter'
+
+  const mkSep=()=>{ const d=document.createElement('div'); d.className='vc-tb-sep'; return d }
+  toolbar.append(nameSec, mkSep(), matSec, mkSep(), colorSec, mkSep(), signBtn, mkSep(), subBtn)
+
+  // ── Signature bottom sheet ──
+  const overlay = document.createElement('div')
+  overlay.className='vc-sig-overlay'
+  const sheet = document.createElement('div')
+  sheet.className='vc-sig-sheet'
+
+  const sheetHdr = document.createElement('div'); sheetHdr.className='vc-sig-header'
+  const sheetTitle = document.createElement('p'); sheetTitle.className='vc-sig-title'; sheetTitle.textContent='Signature & Note'
+  const closeBtn = document.createElement('button'); closeBtn.className='vc-tb-icon-btn'; closeBtn.setAttribute('aria-label','Close')
+  closeBtn.innerHTML=`<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`
+  sheetHdr.append(sheetTitle, closeBtn)
+
+  const noteTA = document.createElement('textarea')
+  noteTA.className='vc-sig-note'; noteTA.maxLength=NOTE_MAX; noteTA.rows=2
+  noteTA.placeholder='Leave a note… (optional)'
+  noteTA.addEventListener('input', () => { state.note=noteTA.value; refresh() })
+
+  const inkRow = document.createElement('div'); inkRow.className='vc-sig-ink-row'
+  const inkLbl = document.createElement('p'); inkLbl.className='vc-tb-label'; inkLbl.textContent='INK'
+  inkRow.appendChild(inkLbl)
+  INK_PRESETS.forEach(c => {
+    const sw = document.createElement('button')
+    sw.className=`vc-tb-swatch vc-sig-ink-sw${c===state.inkColor?' active':''}`; sw.style.background=c
+    sw.addEventListener('click', () => {
+      state.inkColor=c; sig.setInk(c)
+      inkRow.querySelectorAll('.vc-sig-ink-sw').forEach(s=>s.classList.toggle('active',s===sw))
+      refresh()
+    })
+    inkRow.appendChild(sw)
+  })
+  const inkCL=document.createElement('label'); inkCL.className='vc-tb-custom'
+  const inkCI=document.createElement('input'); inkCI.type='color'; inkCI.value=state.inkColor
+  inkCI.addEventListener('input', e => {
+    state.inkColor=e.target.value; sig.setInk(state.inkColor)
+    inkRow.querySelectorAll('.vc-sig-ink-sw').forEach(s=>s.classList.remove('active')); refresh()
+  })
+  inkCL.append(inkCI); inkCL.insertAdjacentHTML('beforeend',`<svg width="11" height="11" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/></svg>`)
+  inkRow.appendChild(inkCL)
+
+  const clearBtn = document.createElement('button'); clearBtn.className='vc-sig-clear'
+  clearBtn.textContent='Clear signature'
+  clearBtn.addEventListener('click', () => { sig.clear(); sigStrokes=[]; refresh() })
+
+  const doneBtn = document.createElement('button'); doneBtn.className='vc-sig-done'; doneBtn.textContent='Done'
+
+  sheet.append(sheetHdr, noteTA, inkRow, sig.el, clearBtn, doneBtn)
+  overlay.appendChild(sheet)
+
+  sig.el.addEventListener('strokeend', () => { sigStrokes=sig.getStrokes(); refresh() })
+
+  function openSheet()  { overlay.classList.add('open') }
+  function closeSheet() { overlay.classList.remove('open') }
+  signBtn.addEventListener('click', openSheet)
+  closeBtn.addEventListener('click', closeSheet)
+  doneBtn.addEventListener('click', closeSheet)
+  overlay.addEventListener('click', e => { if (e.target===overlay) closeSheet() })
+  document.addEventListener('keydown', e => { if (e.key==='Escape' && overlay.classList.contains('open')) closeSheet() })
 
   // ── Submit ──
-  submitBtn.addEventListener('click', async () => {
-    if (!state.name.trim()) { nameEl.focus(); return }
-    submitBtn.disabled = true; submitBtn.textContent = 'Signing…'
+  subBtn.addEventListener('click', async () => {
+    if (!state.name.trim()) { nameIn.focus(); return }
+    subBtn.disabled=true; subBtn.textContent='…'
 
     const { data, error } = await sb.from('visitor_cards').insert({
       name:           state.name.trim(),
-      note:           state.note.trim() || null,
-      signature_data: JSON.stringify(sig.getStrokes()),
+      note:           state.note.trim()||null,
+      signature_data: JSON.stringify(sigStrokes),
       material:       state.material,
       color:          state.color,
       ink_color:      state.inkColor,
     }).select().single()
 
-    if (error) {
-      submitBtn.disabled = false; submitBtn.textContent = 'ENTER →'
-      console.error('Supabase insert error:', error); return
-    }
+    if (error) { subBtn.disabled=false; subBtn.textContent='Enter'; console.error(error); return }
 
-    // Success state
-    const finalStrokes = sig.getStrokes()
-    const finalState   = { ...state }
+    toolbar.remove(); overlay.remove()
+    stage.innerHTML=''
 
-    wrap.innerHTML = `<div class="vc-success"></div>`
-    const suc = wrap.querySelector('.vc-success')
+    const suc = document.createElement('div'); suc.className='vc-success'
+    const sucNo = document.createElement('p'); sucNo.className='vc-success-no'
+    sucNo.innerHTML=`Card created. <span>NO. ${String(data.visitor_number).padStart(4,'0')}</span>`
 
-    const sucNo = document.createElement('p')
-    sucNo.className = 'vc-success-no'
-    sucNo.innerHTML = `Card created. <span>NO. ${String(data.visitor_number).padStart(4,'0')}</span>`
+    const sucCanvas = document.createElement('canvas'); sucCanvas.className='vc-preview'
+    await renderCard(sucCanvas, { ...state, strokes: sigStrokes, visitorNumber: data.visitor_number, createdAt: data.created_at })
+    applyGlow(sucCanvas)
 
-    const sucCanvas = document.createElement('canvas')
-    sucCanvas.className = 'vc-preview'
-    await renderCard(sucCanvas, { ...finalState, strokes: finalStrokes, visitorNumber: data.visitor_number, createdAt: data.created_at })
-
-    const btnRow = document.createElement('div')
-    btnRow.className = 'vc-success-btns'
-
-    const dlBtn = document.createElement('button')
-    dlBtn.className = 'vc-dl-btn'; dlBtn.textContent = 'Download card'
+    const btnRow = document.createElement('div'); btnRow.className='vc-success-btns'
+    const dlBtn = document.createElement('button'); dlBtn.className='vc-dl-btn'; dlBtn.textContent='Download'
     dlBtn.addEventListener('click', async () => {
-      const dl = document.createElement('canvas')
-      await renderCard(dl, { ...finalState, strokes: finalStrokes, visitorNumber: data.visitor_number, createdAt: data.created_at })
-      const a = document.createElement('a')
-      a.href = dl.toDataURL('image/png')
-      a.download = `subtitles-visitor-${String(data.visitor_number).padStart(4,'0')}.png`
-      a.click()
+      const dl=document.createElement('canvas')
+      await renderCard(dl, { ...state, strokes: sigStrokes, visitorNumber: data.visitor_number, createdAt: data.created_at })
+      const a=document.createElement('a'); a.href=dl.toDataURL('image/png')
+      a.download=`subtitles-visitor-${String(data.visitor_number).padStart(4,'0')}.png`; a.click()
     })
-
-    const viewBtn = document.createElement('button')
-    viewBtn.className = 'vc-view-all-btn'; viewBtn.textContent = 'View all cards →'
+    const viewBtn = document.createElement('button'); viewBtn.className='vc-view-all-btn'; viewBtn.textContent='View all cards →'
     viewBtn.addEventListener('click', () => document.dispatchEvent(new CustomEvent('visitor:showglobe')))
+    btnRow.append(dlBtn, viewBtn)
+    suc.append(sucNo, sucCanvas, btnRow)
+    stage.appendChild(suc)
 
-    btnRow.appendChild(dlBtn); btnRow.appendChild(viewBtn)
-    suc.appendChild(sucNo); suc.appendChild(sucCanvas); suc.appendChild(btnRow)
-
+    stage._setToolbarVisible = () => {}
+    stage._cleanup = () => {}
     onDone(data)
   })
 
+  document.body.append(toolbar, overlay)
+  stage._setToolbarVisible = v => { toolbar.style.display = v ? '' : 'none' }
+  stage._cleanup = () => { toolbar.remove(); overlay.remove() }
+
   refresh()
-  return wrap
+  return stage
 }
 
 // ── Visitor globe ──────────────────────────────────────────────────────────────
@@ -822,8 +827,10 @@ export function initVisitor(container) {
     subPanel.querySelectorAll('.vc-tab').forEach(t => t.classList.toggle('active', t.dataset.tab===name))
     if (name === 'sign') {
       signWrap.classList.add('active'); globeWrap.classList.remove('active')
+      signView._setToolbarVisible?.(true)
     } else {
       globeWrap.classList.add('active'); signWrap.classList.remove('active')
+      signView._setToolbarVisible?.(false)
       if (!globeCleanup) globeCleanup = buildGlobe(globeWrap)
     }
   }
@@ -842,6 +849,7 @@ export function initVisitor(container) {
   container._cleanup = () => {
     subPanel.remove()
     globeCleanup?.()
+    signView._cleanup?.()
     document.removeEventListener('visitor:showglobe', onShowGlobe)
   }
 }
