@@ -284,11 +284,17 @@ function buildSignView(onDone) {
 
   const sig = buildSigCanvas(state.inkColor)
 
-  function refresh() { renderCard(preview, { ...state, strokes: sig.getStrokes() }) }
+  function refresh() {
+    renderCard(preview, { ...state, strokes: sig.getStrokes() })
+    const r=parseInt(state.color.slice(1,3),16)||0, g=parseInt(state.color.slice(3,5),16)||0, b=parseInt(state.color.slice(5,7),16)||0
+    const glowA = state.material==='solid' ? 0.20 : state.material==='glass' ? 0.12 : 0.06
+    preview.style.boxShadow = `0 0 0 1px rgba(255,255,255,0.07),0 48px 120px rgba(0,0,0,0.72),0 16px 40px rgba(0,0,0,0.42),0 0 80px rgba(${r},${g},${b},${glowA})`
+  }
 
   wrap.innerHTML = `
     <div class="vc-header">
-      <p class="vc-welcome-title">I WAS HERE</p>
+      <p class="vc-eyebrow">Subtitles · Visitor Registry</p>
+      <h2 class="vc-headline">I Was Here.</h2>
       <p class="vc-welcome-sub">Leave your mark on this collection.</p>
     </div>`
   wrap.appendChild(preview)
